@@ -59,7 +59,6 @@ async function applyStyle() {
 async function applyCustomStyle() {
   await Word.run(async (context) => {
 
-    const lastParagraph = context.document.body.paragraphs.getLast();
     lastParagraph.style = "MyCustomStyle";
 
       await context.sync();
@@ -148,15 +147,34 @@ async function insertTable() {
 
     const secondParagraph = context.document.body.paragraphs.getFirst().getNext();
 
-    const tableData = [
-      ["Name", "ID", "Birth City"],
-      ["Bob", "434", "Chicago"],
-      ["Sue", "719", "Havana"],
-  ];
-secondParagraph.insertTable(3, 3, Word.InsertLocation.after, tableData);
-
+    const tableData = [["I'll be your huckleberry"]];
+    var test = secondParagraph.insertTable(1, 1, Word.InsertLocation.after, tableData);
+    await context.sync();
+    test.tag = "myTestTable";
+    await context.sync();
+    
+    context.document.body.insertParagraph(`test tag value: ${test.tag}!!!`,
+      Word.InsertLocation.start);
+    await context.sync();
+    
+      var test2 = context.document.body.tables.getByTag('myTestTable').getFirst();
       await context.sync();
-  });
+    
+      if(test2 != null){
+        context.document.body.insertParagraph(`Table was found.`,
+          Word.InsertLocation.start);
+        await context.sync();
+      }
+    
+      var myRow = test2.rows.getFirst();
+      await context.sync();
+    
+      var myCell = myRow.cells.getFirst();
+      await context.sync();
+    
+      myCell.value = "Thanks Sentris, you da best!";
+      await context.sync();
+    });
 }
 
 async function createContentControl() {
